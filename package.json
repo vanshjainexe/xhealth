@@ -1,0 +1,13 @@
+{
+  "name": "xhealth",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check public/app.js && node --check public/reports.js && node --check public/voice.js && node --check public/microphone.js"
+  },
+  "dependencies": {
+    "text2wav": "0.0.14",
+    "ws": "^8.22.0"
+  }
+}

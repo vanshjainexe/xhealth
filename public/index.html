@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>xhealth</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/reports.js" defer></script>
+  <script src="/voice.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">xhealth<span>+</span></a>
+    <nav aria-label="Main navigation"><a id="talk-link" href="/">Talk</a><a id="reports-link" href="/reports">My health</a></nav>
+    <div class="header-actions"><label class="toggle"><input type="checkbox" id="voice-output"> Audio</label><button id="reply-language" class="quiet" title="Switch reply language">English</button><button id="new-chat" class="quiet">New chat</button><button id="setup-button" class="icon-button" aria-label="Settings" title="Settings">⚙</button></div>
+  </header>
+  <main>
+    <div id="notice" role="status" aria-live="polite" hidden><span id="notice-text"></span><button id="dismiss-notice" aria-label="Dismiss notification">×</button></div>
+    <section id="talk-view" class="talk-view">
+    <div id="chat-scroll" class="chat-scroll">
+      <section id="welcome" class="welcome">
+        <span class="welcome-icon" aria-hidden="true">+</span>
+        <h1>Your health, one conversation.</h1>
+        <p>Talk it through. Log what you eat. Understand your reports.</p>
+        <div class="suggestions">
+          <button id="welcome-voice"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11v1a7 7 0 0 0 14 0v-1M12 19v3M9 22h6"/></svg><span>Start talking</span><span class="muted">Your health, in your own words ↗</span></button>
+          <button id="welcome-meal"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11h18a9 9 0 0 1-18 0ZM7 22h10M8 3v4M12 2v5M16 3v4"/></svg><span>Log a meal</span><span class="muted">Food + portions → nutrition estimate ↗</span></button>
+          <button id="welcome-report"><svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H5v18h14V8ZM14 3v5h5M8 12h8M8 16h5"/></svg><span>Add a report</span><span class="muted">Your results, explained clearly ↗</span></button>
+        </div>
+      </section>
+      <div id="messages" class="messages" role="log" aria-label="Conversation" aria-live="polite"></div>
+    </div>
+    <div class="input-area">
+      <section id="voice-panel" class="voice-panel" hidden aria-label="Voice conversation">
+        <button id="close-voice" class="icon-button voice-close" aria-label="Close voice">×</button>
+        <div id="voice-orb" class="voice-orb" aria-hidden="true"><span></span></div>
+        <p id="orb-status" role="status" aria-live="polite">Ready to talk</p>
+        <p class="voice-caption">Speak in Hindi, Hinglish or English.</p>
+        <p id="voice-transcript" class="voice-caption" aria-live="polite"></p>
+        <button id="orb-mic" class="primary">Start talking</button>
+        <p class="voice-caption">Enable Audio at the top to hear replies. Your conversation stays in the chat.</p>
+        <p id="hindi-voice-status" class="voice-caption"></p>
+      </section>
+      <button id="meal-summary" class="meal-summary"><span>Today’s food diary</span><span id="meal-totals">No meals logged yet</span><span>↗</span></button>
+      <div id="report-chips" class="report-chips"></div>
+      <section id="meal-help" class="meal-help" hidden aria-label="Meal logging guide">
+        <div><strong>What did you eat, and how much?</strong><button id="cancel-meal" type="button" class="quiet">Cancel</button></div>
+        <p>Say the foods. Portions help; missing amounts use a rough serving estimate.</p>
+        <button id="meal-example" type="button">Try: 2 rotis + 1 bowl of dal</button>
+        <span>Review the example before sending, or tap Speak.</span>
+      </section>
+      <form id="chat-form" class="composer">
+        <label class="sr-only" for="question">Message xhealth</label>
+        <textarea id="question" rows="1" maxlength="5000" placeholder="Message xhealth…" required></textarea>
+        <div class="composer-actions">
+          <div><button id="attach-button" type="button" class="icon-button" aria-label="Attach a report" title="Attach a report">+</button><button id="meal-mode" type="button" class="quiet">Log meal</button><span id="voice-status" class="muted"></span></div>
+          <div><button id="mic-button" type="button" class="quiet" title="Speak a message">◉ Speak</button><button id="send-button" type="submit" class="send-button" aria-label="Send message" title="Send message">↑</button></div>
+        </div>
+      </form>
+      <div class="below-composer"><p>Health guidance, not a diagnosis. Check important details with your clinician.</p><button id="stop-audio" class="quiet" hidden>Stop audio</button></div>
+    </div>
+    </section>
+    <section id="reports-view" class="reports-view" hidden>
+      <div class="reports-heading"><div><h1>My health</h1><p class="muted">Your latest results and next steps.</p></div><button id="add-report-page" class="primary">+ Add report</button></div>
+      <div class="report-toolbar"><label class="sr-only" for="report-select">Choose a report</label><select id="report-select"></select><button id="analyze-button" class="quiet">Analyze report</button><button id="short-sample" class="quiet">Try sample report</button><button id="delete-report" class="quiet" disabled title="Select one report to delete">Delete report</button><button id="undo-report" class="quiet" hidden>Undo delete</button></div>
+      <div id="reports-empty" class="page-empty"><span class="welcome-icon">+</span><h2>Your first report starts here.</h2><p class="muted">Upload a report to see lab-range charts and any disease-risk scores it contains.</p><button id="sample-report-page">Try a fictional sample</button></div>
+      <div id="report-charts" hidden></div>
+      <p class="chart-footnote">Lab flags are not a diagnosis or a disease-risk prediction. Charts use the reference ranges printed in your report. <a href="https://medlineplus.gov/lab-tests/how-to-understand-your-lab-results/" target="_blank" rel="noopener noreferrer">About lab ranges ↗</a></p>
+    </section>
+  </main>
+  <dialog id="report-dialog">
+    <div class="dialog-heading"><h2>Add a health report</h2><button id="close-report" class="icon-button" aria-label="Close reports">×</button></div>
+    <div class="logging-steps"><span>1 · Add your file</span><span>2 · Check text & date</span><span>3 · See your results</span></div>
+    <p class="muted">Choose a PDF or TXT file, or paste your results. Scanned PDFs are read automatically. Check the extracted numbers before saving.</p>
+    <label class="upload">+ Choose PDF or text file<input id="report-file" type="file" accept=".pdf,.txt" hidden></label>
+    <form id="report-form">
+      <div class="form-row"><label>Report name<input id="report-name" placeholder="e.g. Blood test" maxlength="80" required></label><label>Report date<input id="report-date" type="date" required></label></div>
+      <label>Report text<textarea id="report-text" rows="5" placeholder="Include values, units and reference ranges…" required></textarea></label>
+      <div class="form-actions"><button id="sample-button" type="button" class="quiet">Try a sample</button><button id="save-report-button" type="submit" class="primary">Save & analyze</button></div>
+      <p id="report-status" class="muted" role="status"></p>
+    </form>
+    <div id="report-list" class="report-list"></div>
+    <p class="privacy-note">Saved in this browser. Scanned pages are sent to Groq to read their text. Report text goes to Groq for analysis and chat.</p>
+  </dialog>
+  <dialog id="setup-dialog">
+    <div class="dialog-heading"><h2>Settings</h2><button id="close-setup" class="icon-button" aria-label="Close settings">×</button></div>
+    <p id="connection" class="muted">Checking connection…</p>
+    <details class="connection-settings"><summary>Local demo setup</summary>
+      <form id="setup-form"><p class="muted">Keys stay on the local server. Leave a field blank to keep its existing key.</p><label>Groq API key<input id="groq-key" type="password" autocomplete="off" placeholder="Replace Groq key"></label><label>Deepgram API key<input id="deepgram-key" type="password" autocomplete="off" placeholder="Connect voice"></label><button type="submit" class="primary">Save connection</button><p id="setup-status" class="muted" aria-live="polite"></p></form>
+    </details>
+    <p class="privacy-note">Your chats and reports are saved in this browser. Messages and attached reports go to Groq; voice audio and spoken reply text go to Deepgram.</p>
+    <div class="settings-actions"><button id="restore-chat" class="quiet" hidden>Restore previous chat</button><button id="clear-button" class="quiet">Clear saved data</button></div>
+  </dialog>
+  <dialog id="meal-dialog">
+    <div class="dialog-heading"><h2>Today’s food diary</h2><button id="close-meals" class="icon-button" aria-label="Close meals">×</button></div>
+    <p id="meal-day-total" class="meal-day-total"></p>
+    <p class="nutrition-explainer">kcal means food energy. g means grams. These totals include only the meals you have logged.</p>
+    <div id="meal-energy-chart"></div>
+    <div id="macro-summary" class="macro-summary"></div>
+    <div id="meal-list" class="meal-list"></div>
+    <button id="add-meal-dialog" class="primary">+ Log a meal</button>
+    <p class="privacy-note">Calories and macros are estimates from your description. Portions, ingredients and cooking oil affect them. No daily calorie target is prescribed.</p>
+  </dialog>
+</body>
+</html>
